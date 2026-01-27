@@ -29,7 +29,7 @@ class CanUpdateAttribute
             abort(404, 'Atributo no encontrado.');
         }
 
-        $hasAccess = $user->assignedStations()
+        $hasAccess = $user->visibleStations()
             ->where('stations.id', $attribute->station_id)
             ->exists();
 

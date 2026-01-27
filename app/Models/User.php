@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -48,9 +49,27 @@ class User extends Authenticatable
         ];
     }
 
-    public function assignedStations()
+    public function assignedStations(): BelongsToMany
     {
         return $this->belongsToMany(Station::class, 'user_station_assignments')
             ->withTimestamps();
+    }
+
+    public function visibleStations()
+    {
+        if ($this->is_admin) {
+            return Station::query();
+        }
+
+        return $this->assignedStations();
+    }
+
+    public function visibleStationIds()
+    {
+        if ($this->is_admin) {
+            return $this->visibleStations()->pluck('id');
+        }
+
+        return $this->assignedStations()->pluck('stations.id');
     }
 }

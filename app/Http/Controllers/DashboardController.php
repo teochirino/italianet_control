@@ -12,6 +12,8 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        $visibleStationIds = $user->visibleStationIds();
+
         $divisions = Division::with(['stations' => function ($query) use ($user) {
             $query->where('active', true)
                 ->with(['attributes' => function ($q) {
@@ -21,19 +23,18 @@ class DashboardController extends Controller
         }])
         ->where('active', true)
         ->orderBy('order')
+        ->when(!$user->is_admin, function ($query) use ($visibleStationIds) {
+            $query->whereHas('stations', function ($stationQuery) use ($visibleStationIds) {
+                $stationQuery->where('active', true)->whereIn('id', $visibleStationIds);
+            });
+        })
         ->get();
 
         if (!$user->is_admin) {
-            $assignedStationIds = $user->assignedStations()->pluck('stations.id');
-            
-            $divisions = $divisions->map(function ($division) use ($assignedStationIds) {
-                $division->stations = $division->stations->filter(function ($station) use ($assignedStationIds) {
-                    return $assignedStationIds->contains($station->id);
-                });
-                return $division;
-            })->filter(function ($division) {
-                return $division->stations->isNotEmpty();
-            })->values();
+            $divisions->each(function ($division) use ($visibleStationIds) {
+                $filteredStations = $division->stations->whereIn('id', $visibleStationIds)->values();
+                $division->setRelation('stations', $filteredStations);
+            });
         }
 
         return Inertia::render('Dashboard', [
@@ -46,6 +47,8 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        $visibleStationIds = $user->visibleStationIds();
+
         $divisions = Division::with(['stations' => function ($query) use ($user) {
             $query->where('active', true)
                 ->with(['attributes' => function ($q) {
@@ -55,19 +58,18 @@ class DashboardController extends Controller
         }])
         ->where('active', true)
         ->orderBy('order')
+        ->when(!$user->is_admin, function ($query) use ($visibleStationIds) {
+            $query->whereHas('stations', function ($stationQuery) use ($visibleStationIds) {
+                $stationQuery->where('active', true)->whereIn('id', $visibleStationIds);
+            });
+        })
         ->get();
 
         if (!$user->is_admin) {
-            $assignedStationIds = $user->assignedStations()->pluck('stations.id');
-            
-            $divisions = $divisions->map(function ($division) use ($assignedStationIds) {
-                $division->stations = $division->stations->filter(function ($station) use ($assignedStationIds) {
-                    return $assignedStationIds->contains($station->id);
-                });
-                return $division;
-            })->filter(function ($division) {
-                return $division->stations->isNotEmpty();
-            })->values();
+            $divisions->each(function ($division) use ($visibleStationIds) {
+                $filteredStations = $division->stations->whereIn('id', $visibleStationIds)->values();
+                $division->setRelation('stations', $filteredStations);
+            });
         }
 
         return response()->json([
