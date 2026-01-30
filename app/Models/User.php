@@ -19,6 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'main_user_id',
         'name',
         'email',
         'password',
@@ -71,5 +72,14 @@ class User extends Authenticatable
         }
 
         return $this->assignedStations()->pluck('stations.id');
+    }
+
+    public function externalUser()
+    {
+        return $this->setConnection('italianet_users')->belongsTo(
+            ExternalUser::class,
+            'main_user_id',
+            'id'
+        );
     }
 }

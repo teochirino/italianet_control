@@ -16,6 +16,7 @@ class ExternalUser extends Model
         'email',
         'nomina',
         'status',
+        'password',
     ];
 
     public $timestamps = false;
@@ -36,5 +37,11 @@ class ExternalUser extends Model
         ]);
         
         return implode(' ', $parts);
+    }
+
+    public function user()
+    {
+        return $this->setConnection('mysql')
+            ->hasOne(User::class, 'main_user_id', 'id');
     }
 }
