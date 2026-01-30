@@ -91,6 +91,7 @@ class ExternalUserController extends Controller
         ])));
         
         $user = User::create([
+            'main_user_id' => $externalUser->id,
             'name' => $fullName,
             'email' => $externalUser->email,
             'password' => Hash::make('password'),

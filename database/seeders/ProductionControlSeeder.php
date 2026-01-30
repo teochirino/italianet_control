@@ -14,6 +14,7 @@ class ProductionControlSeeder extends Seeder
     public function run(): void
     {
         $adminUser = User::create([
+            'main_user_id' => null,
             'name' => 'Administrador',
             'email' => 'admin@control.com',
             'password' => Hash::make('password'),
@@ -21,6 +22,7 @@ class ProductionControlSeeder extends Seeder
         ]);
 
         $normalUser1 = User::create([
+            'main_user_id' => null,
             'name' => 'Pedro Morales',
             'email' => 'pedro@control.com',
             'password' => Hash::make('password'),
@@ -28,6 +30,7 @@ class ProductionControlSeeder extends Seeder
         ]);
 
         $normalUser2 = User::create([
+            'main_user_id' => null,
             'name' => 'María González',
             'email' => 'maria@control.com',
             'password' => Hash::make('password'),
