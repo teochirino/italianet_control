@@ -27,7 +27,7 @@ class ExternalUserController extends Controller
         }
 
         $externalUsers = $query->orderBy('name')
-                              ->limit(100)
+                              ->limit(500)
                               ->get(['id', 'name', 'apellidopaterno', 'apellidomaterno', 'email', 'nomina']);
 
         $existingUsers = User::where('is_admin', false)

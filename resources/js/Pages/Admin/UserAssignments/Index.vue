@@ -20,6 +20,7 @@ const externalSearchQuery = ref('');
 const selectedUser = ref(null);
 const selectedDivision = ref(null);
 const selectedStation = ref(null);
+const searchTimeout = ref(null);
 
 const filteredUsers = computed(() => {
     if (!searchQuery.value) return props.users;
@@ -49,10 +50,12 @@ const closeImportModal = () => {
     externalSearchQuery.value = '';
 };
 
-const loadExternalUsers = async () => {
+const loadExternalUsers = async (search = '') => {
     isSearching.value = true;
     try {
-        const response = await axios.get(route('external-users.index'));
+        const response = await axios.get(route('external-users.index'), {
+            params: { search: search }
+        });
         allExternalUsers.value = response.data.users;
         externalUsers.value = response.data.users;
     } catch (error) {
@@ -63,17 +66,13 @@ const loadExternalUsers = async () => {
 };
 
 const filterExternalUsers = () => {
-    if (!externalSearchQuery.value) {
-        externalUsers.value = allExternalUsers.value;
-        return;
+    if (searchTimeout.value) {
+        clearTimeout(searchTimeout.value);
     }
     
-    const query = externalSearchQuery.value.toLowerCase();
-    externalUsers.value = allExternalUsers.value.filter(user => 
-        user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query) ||
-        (user.nomina && user.nomina.toString().includes(query))
-    );
+    searchTimeout.value = setTimeout(async () => {
+        await loadExternalUsers(externalSearchQuery.value);
+    }, 300);
 };
 
 const importUser = async (externalUserId) => {
