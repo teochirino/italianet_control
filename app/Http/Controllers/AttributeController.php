@@ -84,6 +84,7 @@ class AttributeController extends Controller
     {
         $validated = $request->validate([
             'color' => 'required|in:rojo,amarillo,verde,gris',
+            'comment' => 'nullable|string|max:100',
         ]);
 
         $previousColor = $attribute->color;
@@ -96,6 +97,7 @@ class AttributeController extends Controller
                 'user_id' => auth()->id(),
                 'previous_color' => $previousColor,
                 'new_color' => $newColor,
+                'comment' => $validated['comment'] ?? 'Sin comentarios',
             ]);
         }
 

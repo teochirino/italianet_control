@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ColorHistoryModal from '@/Components/ColorHistoryModal.vue';
+import ColorChangeConfirmModal from '@/Components/ColorChangeConfirmModal.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
@@ -19,6 +20,14 @@ const historyAttributeId = ref(null);
 const historyStationName = ref('');
 const historyAttributeName = ref('');
 
+const showColorChangeModal = ref(false);
+const pendingColorChange = ref({
+    attributeId: null,
+    currentColor: '',
+    newColor: '',
+    attributeName: '',
+});
+
 const getColorClass = (color) => {
     const colors = {
         'rojo': 'bg-red-500',
@@ -29,19 +38,46 @@ const getColorClass = (color) => {
     return colors[color] || 'bg-gray-300';
 };
 
-const updateColor = async (attributeId, color) => {
+const requestColorChange = (attribute, newColor) => {
+    if (attribute.color === newColor) {
+        return;
+    }
+    
+    pendingColorChange.value = {
+        attributeId: attribute.id,
+        currentColor: attribute.color,
+        newColor: newColor,
+        attributeName: attribute.name,
+    };
+    
+    showColorChangeModal.value = true;
+};
+
+const confirmColorChange = async (comment) => {
     try {
-        const response = await axios.post(`/attributes/${attributeId}/update-color`, {
-            color: color
+        const response = await axios.post(`/attributes/${pendingColorChange.value.attributeId}/update-color`, {
+            color: pendingColorChange.value.newColor,
+            comment: comment || 'Sin comentarios'
         });
         
         if (response.data.success) {
+            showColorChangeModal.value = false;
             refreshData();
         }
     } catch (error) {
         console.error('Error updating color:', error);
         alert('Error al actualizar el color');
     }
+};
+
+const closeColorChangeModal = () => {
+    showColorChangeModal.value = false;
+    pendingColorChange.value = {
+        attributeId: null,
+        currentColor: '',
+        newColor: '',
+        attributeName: '',
+    };
 };
 
 const showStationHistory = (station) => {
@@ -177,22 +213,22 @@ onUnmounted(() => {
                                                     </button>
                                                 </div>
                                                 <div class="flex space-x-1">
-                                                    <button @click="updateColor(attribute.id, 'rojo')"
+                                                    <button @click="requestColorChange(attribute, 'rojo')"
                                                             :class="['w-8 h-8 rounded-full transition-all', 
                                                                      attribute.color === 'rojo' ? 'bg-red-500 ring-2 ring-red-300' : 'bg-red-300 hover:bg-red-400']"
                                                             title="Rojo">
                                                     </button>
-                                                    <button @click="updateColor(attribute.id, 'amarillo')"
+                                                    <button @click="requestColorChange(attribute, 'amarillo')"
                                                             :class="['w-8 h-8 rounded-full transition-all', 
                                                                      attribute.color === 'amarillo' ? 'bg-yellow-400 ring-2 ring-yellow-300' : 'bg-yellow-200 hover:bg-yellow-300']"
                                                             title="Amarillo">
                                                     </button>
-                                                    <button @click="updateColor(attribute.id, 'verde')"
+                                                    <button @click="requestColorChange(attribute, 'verde')"
                                                             :class="['w-8 h-8 rounded-full transition-all', 
                                                                      attribute.color === 'verde' ? 'bg-green-500 ring-2 ring-green-300' : 'bg-green-300 hover:bg-green-400']"
                                                             title="Verde">
                                                     </button>
-                                                    <button @click="updateColor(attribute.id, 'gris')"
+                                                    <button @click="requestColorChange(attribute, 'gris')"
                                                             :class="['w-8 h-8 rounded-full transition-all', 
                                                                      attribute.color === 'gris' ? 'bg-gray-400 ring-2 ring-gray-300' : 'bg-gray-200 hover:bg-gray-300']"
                                                             title="Gris">
@@ -216,6 +252,15 @@ onUnmounted(() => {
             :station-name="historyStationName"
             :attribute-name="historyAttributeName"
             @close="closeHistoryModal"
+        />
+
+        <ColorChangeConfirmModal
+            :show="showColorChangeModal"
+            :current-color="pendingColorChange.currentColor"
+            :new-color="pendingColorChange.newColor"
+            :attribute-name="pendingColorChange.attributeName"
+            @close="closeColorChangeModal"
+            @confirm="confirmColorChange"
         />
     </AuthenticatedLayout>
 </template>

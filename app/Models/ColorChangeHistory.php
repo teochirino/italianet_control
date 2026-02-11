@@ -16,6 +16,7 @@ class ColorChangeHistory extends Model
         'user_id',
         'previous_color',
         'new_color',
+        'comment',
     ];
 
     public function station(): BelongsTo

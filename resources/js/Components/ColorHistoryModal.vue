@@ -146,6 +146,9 @@ watch(() => props.show, (newValue) => {
                                     Usuario
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Comentarios
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Fecha y Hora
                                 </th>
                             </tr>
@@ -169,6 +172,9 @@ watch(() => props.show, (newValue) => {
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                     {{ history.user.name }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ history.comment || 'Sin comentarios' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ formatDate(history.created_at) }}
