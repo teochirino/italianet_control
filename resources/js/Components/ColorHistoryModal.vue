@@ -140,13 +140,13 @@ watch(() => props.show, (newValue) => {
                                     Color Anterior
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Tiempo Anterior
+                                    Tiempo en Anterior Color
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Color Nuevo
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Tiempo Nuevo
+                                    Tiempo en Nuevo Color
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Usuario
