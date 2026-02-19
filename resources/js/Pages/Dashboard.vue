@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ColorHistoryModal from '@/Components/ColorHistoryModal.vue';
 import ColorChangeConfirmModal from '@/Components/ColorChangeConfirmModal.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -104,6 +104,40 @@ const closeHistoryModal = () => {
     historyAttributeName.value = '';
 };
 
+const currentTime = ref(new Date());
+
+const calculateTimeInColor = (colorChangedAt) => {
+    if (!colorChangedAt) {
+        return 'Sin datos';
+    }
+    
+    const changedDate = new Date(colorChangedAt);
+    const now = currentTime.value;
+    const diffMs = now - changedDate;
+    
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    const parts = [];
+    
+    if (days > 0) {
+        parts.push(`${days}d`);
+    }
+    if (hours % 24 > 0) {
+        parts.push(`${hours % 24}h`);
+    }
+    if (minutes % 60 > 0) {
+        parts.push(`${minutes % 60}m`);
+    }
+    if (days === 0 && hours === 0 && minutes === 0) {
+        parts.push(`${seconds}s`);
+    }
+    
+    return parts.length > 0 ? parts.join(' ') : '0s';
+};
+
 const refreshData = async () => {
     try {
         const response = await axios.get('/api/dashboard-data');
@@ -114,7 +148,16 @@ const refreshData = async () => {
 };
 
 onMounted(() => {
-    refreshInterval = setInterval(refreshData, 5000);
+    refreshInterval = setInterval(() => {
+        refreshData();
+        currentTime.value = new Date();
+    }, 5000);
+    
+    const timeUpdateInterval = setInterval(() => {
+        currentTime.value = new Date();
+    }, 1000);
+    
+    return () => clearInterval(timeUpdateInterval);
 });
 
 onUnmounted(() => {
@@ -160,6 +203,10 @@ onUnmounted(() => {
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                             <div class="flex items-center space-x-4">
+                                <img v-if="division.image" 
+                                     :src="`/images/divisions/${division.image}`" 
+                                     :alt="division.name"
+                                     class="w-12 h-12 object-contain" />
                                 <div :class="['w-6 h-6 rounded-full', getColorClass(division.color)]"></div>
                                 <h3 class="text-2xl font-bold text-gray-800">{{ division.name }}</h3>
                             </div>
@@ -178,17 +225,25 @@ onUnmounted(() => {
                                              station.color === 'verde' ? 'border-green-500' : 
                                              'border-gray-400'">
                                     
-                                    <div class="px-4 py-3 flex items-center justify-between"
+                                    <div class="px-4 py-3"
                                          :class="getColorClass(station.color)">
-                                        <h4 class="text-lg font-semibold text-white">{{ station.name }}</h4>
-                                        <button v-if="isAdmin" 
-                                                @click="showStationHistory(station)"
-                                                class="text-white hover:text-gray-200 transition-colors"
-                                                title="Ver historial de la estación">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="text-lg font-semibold text-white">{{ station.name }}</h4>
+                                            <button v-if="isAdmin" 
+                                                    @click="showStationHistory(station)"
+                                                    class="text-white hover:text-gray-200 transition-colors"
+                                                    title="Ver historial de la estación">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="mt-1 text-xs text-white opacity-90 flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                        </button>
+                                            <span>{{ calculateTimeInColor(station.color_changed_at) }}</span>
+                                        </div>
                                     </div>
 
                                     <div class="p-4 bg-gray-50">
@@ -198,41 +253,49 @@ onUnmounted(() => {
 
                                         <div v-for="attribute in station.attributes" :key="attribute.id" 
                                              class="mb-3 last:mb-0">
-                                            <div class="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="text-sm font-medium text-gray-700">
-                                                        {{ attribute.name }}
-                                                    </span>
-                                                    <button v-if="isAdmin" 
-                                                            @click="showAttributeHistory(station, attribute)"
-                                                            class="text-gray-400 hover:text-gray-600 transition-colors"
-                                                            title="Ver historial del atributo">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </button>
+                                            <div class="bg-white rounded-lg p-3 shadow-sm">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="text-sm font-medium text-gray-700">
+                                                            {{ attribute.name }}
+                                                        </span>
+                                                        <button v-if="isAdmin" 
+                                                                @click="showAttributeHistory(station, attribute)"
+                                                                class="text-gray-400 hover:text-gray-600 transition-colors"
+                                                                title="Ver historial del atributo">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <div class="flex space-x-1">
+                                                        <button @click="requestColorChange(attribute, 'rojo')"
+                                                                :class="['w-8 h-8 rounded-full transition-all', 
+                                                                         attribute.color === 'rojo' ? 'bg-red-500 ring-2 ring-red-300' : 'bg-red-300 hover:bg-red-400']"
+                                                                title="Rojo">
+                                                        </button>
+                                                        <button @click="requestColorChange(attribute, 'amarillo')"
+                                                                :class="['w-8 h-8 rounded-full transition-all', 
+                                                                         attribute.color === 'amarillo' ? 'bg-yellow-400 ring-2 ring-yellow-300' : 'bg-yellow-200 hover:bg-yellow-300']"
+                                                                title="Amarillo">
+                                                        </button>
+                                                        <button @click="requestColorChange(attribute, 'verde')"
+                                                                :class="['w-8 h-8 rounded-full transition-all', 
+                                                                         attribute.color === 'verde' ? 'bg-green-500 ring-2 ring-green-300' : 'bg-green-300 hover:bg-green-400']"
+                                                                title="Verde">
+                                                        </button>
+                                                        <button @click="requestColorChange(attribute, 'gris')"
+                                                                :class="['w-8 h-8 rounded-full transition-all', 
+                                                                         attribute.color === 'gris' ? 'bg-gray-400 ring-2 ring-gray-300' : 'bg-gray-200 hover:bg-gray-300']"
+                                                                title="Gris">
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div class="flex space-x-1">
-                                                    <button @click="requestColorChange(attribute, 'rojo')"
-                                                            :class="['w-8 h-8 rounded-full transition-all', 
-                                                                     attribute.color === 'rojo' ? 'bg-red-500 ring-2 ring-red-300' : 'bg-red-300 hover:bg-red-400']"
-                                                            title="Rojo">
-                                                    </button>
-                                                    <button @click="requestColorChange(attribute, 'amarillo')"
-                                                            :class="['w-8 h-8 rounded-full transition-all', 
-                                                                     attribute.color === 'amarillo' ? 'bg-yellow-400 ring-2 ring-yellow-300' : 'bg-yellow-200 hover:bg-yellow-300']"
-                                                            title="Amarillo">
-                                                    </button>
-                                                    <button @click="requestColorChange(attribute, 'verde')"
-                                                            :class="['w-8 h-8 rounded-full transition-all', 
-                                                                     attribute.color === 'verde' ? 'bg-green-500 ring-2 ring-green-300' : 'bg-green-300 hover:bg-green-400']"
-                                                            title="Verde">
-                                                    </button>
-                                                    <button @click="requestColorChange(attribute, 'gris')"
-                                                            :class="['w-8 h-8 rounded-full transition-all', 
-                                                                     attribute.color === 'gris' ? 'bg-gray-400 ring-2 ring-gray-300' : 'bg-gray-200 hover:bg-gray-300']"
-                                                            title="Gris">
-                                                    </button>
+                                                <div class="text-xs text-gray-500 flex items-center">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    <span>{{ calculateTimeInColor(attribute.color_changed_at) }}</span>
                                                 </div>
                                             </div>
                                         </div>

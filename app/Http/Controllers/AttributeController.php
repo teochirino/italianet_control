@@ -99,9 +99,14 @@ class AttributeController extends Controller
                 'new_color' => $newColor,
                 'comment' => $validated['comment'] ?? 'Sin comentarios',
             ]);
-        }
 
-        $attribute->update(['color' => $newColor]);
+            $attribute->update([
+                'color' => $newColor,
+                'color_changed_at' => now(),
+            ]);
+        } else {
+            $attribute->update(['color' => $newColor]);
+        }
 
         return response()->json([
             'success' => true,

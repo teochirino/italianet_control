@@ -140,7 +140,13 @@ watch(() => props.show, (newValue) => {
                                     Color Anterior
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tiempo Anterior
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Color Nuevo
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tiempo Nuevo
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Usuario
@@ -164,11 +170,17 @@ watch(() => props.show, (newValue) => {
                                         <span class="text-sm text-gray-700">{{ getColorName(history.previous_color) }}</span>
                                     </div>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {{ history.previous_color_duration ? history.previous_color_duration.formatted : 'N/A' }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center space-x-2">
                                         <div :class="['w-6 h-6 rounded-full', getColorClass(history.new_color)]"></div>
                                         <span class="text-sm text-gray-700">{{ getColorName(history.new_color) }}</span>
                                     </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {{ history.new_color_duration ? history.new_color_duration.formatted : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                     {{ history.user.name }}

@@ -39,6 +39,7 @@ class ProductionControlSeeder extends Seeder
 
         $acero = Division::create([
             'name' => 'ACERO',
+            'image' => 'acero.png',
             'color' => 'verde',
             'order' => 1,
             'active' => true,
@@ -46,6 +47,7 @@ class ProductionControlSeeder extends Seeder
 
         $madera = Division::create([
             'name' => 'MADERA',
+            'image' => 'madera.png',
             'color' => 'verde',
             'order' => 2,
             'active' => true,
@@ -53,6 +55,7 @@ class ProductionControlSeeder extends Seeder
 
         $ensambles = Division::create([
             'name' => 'ENSAMBLES FINALES',
+            'image' => 'ensambles.png',
             'color' => 'verde',
             'order' => 3,
             'active' => true,

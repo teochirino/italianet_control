@@ -16,6 +16,7 @@ class Station extends Model
         'division_id',
         'name',
         'color',
+        'color_changed_at',
         'order',
         'active',
     ];
@@ -23,6 +24,7 @@ class Station extends Model
     protected $casts = [
         'active' => 'boolean',
         'order' => 'integer',
+        'color_changed_at' => 'datetime',
     ];
 
     public function division(): BelongsTo
@@ -45,26 +47,29 @@ class Station extends Model
     {
         $attributes = $this->attributes()->where('active', true)->get();
         
+        $previousColor = $this->color;
+        
         if ($attributes->isEmpty()) {
             $this->color = 'verde';
-            $this->save();
-            $this->division->updateColor();
-            return;
+        } else {
+            $hasRed = $attributes->contains('color', 'rojo');
+            $hasYellow = $attributes->contains('color', 'amarillo');
+            $hasProgramGray = $attributes->where('name', 'PROGRAMA')->contains('color', 'gris');
+
+            if ($hasProgramGray) {
+                $this->color = 'gris';
+            } elseif ($hasRed) {
+                $this->color = 'rojo';
+            } elseif ($hasYellow) {
+                $this->color = 'amarillo';
+            } else {
+                $allGreen = $attributes->every(fn($attr) => $attr->color === 'verde');
+                $this->color = $allGreen ? 'verde' : 'gris';
+            }
         }
 
-        $hasRed = $attributes->contains('color', 'rojo');
-        $hasYellow = $attributes->contains('color', 'amarillo');
-        $hasProgramGray = $attributes->where('name', 'PROGRAMA')->contains('color', 'gris');
-
-        if ($hasProgramGray) {
-            $this->color = 'gris';
-        } elseif ($hasRed) {
-            $this->color = 'rojo';
-        } elseif ($hasYellow) {
-            $this->color = 'amarillo';
-        } else {
-            $allGreen = $attributes->every(fn($attr) => $attr->color === 'verde');
-            $this->color = $allGreen ? 'verde' : 'gris';
+        if ($previousColor !== $this->color) {
+            $this->color_changed_at = now();
         }
 
         $this->save();

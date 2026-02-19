@@ -14,6 +14,7 @@ class Attribute extends Model
         'station_id',
         'name',
         'color',
+        'color_changed_at',
         'order',
         'active',
     ];
@@ -21,6 +22,7 @@ class Attribute extends Model
     protected $casts = [
         'active' => 'boolean',
         'order' => 'integer',
+        'color_changed_at' => 'datetime',
     ];
 
     public function station(): BelongsTo

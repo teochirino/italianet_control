@@ -28,6 +28,7 @@ class DivisionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'image' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
             'active' => 'boolean',
         ]);
@@ -49,6 +50,7 @@ class DivisionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'image' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
             'active' => 'boolean',
         ]);
