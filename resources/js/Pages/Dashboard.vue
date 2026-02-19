@@ -203,12 +203,12 @@ onUnmounted(() => {
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                             <div class="flex items-center space-x-4">
+                                <div :class="['w-6 h-6 rounded-full', getColorClass(division.color)]"></div>
+                                <h3 class="text-2xl font-bold text-gray-800">{{ division.name }}</h3>
                                 <img v-if="division.image" 
                                      :src="`/images/divisions/${division.image}`" 
                                      :alt="division.name"
                                      class="w-12 h-12 object-contain" />
-                                <div :class="['w-6 h-6 rounded-full', getColorClass(division.color)]"></div>
-                                <h3 class="text-2xl font-bold text-gray-800">{{ division.name }}</h3>
                             </div>
                         </div>
 
