@@ -208,7 +208,7 @@ onUnmounted(() => {
                                 <img v-if="division.image" 
                                      :src="`/images/divisions/${division.image}`" 
                                      :alt="division.name"
-                                     class="w-12 h-12 object-contain" />
+                                     class="w-20 h-20 object-contain" />
                             </div>
                         </div>
 
