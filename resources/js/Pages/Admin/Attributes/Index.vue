@@ -32,40 +32,39 @@ const deleteAttribute = (id) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                        <table class="w-full divide-y divide-gray-200 text-sm">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estación</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">División</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Color</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orden</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estación</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">División</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-24">Color</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-16">Orden</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-20">Estado</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-32">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <tr v-for="attribute in attributes" :key="attribute.id">
-                                    <td class="px-6 py-4 whitespace-nowrap font-medium">{{ attribute.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ attribute.station?.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ attribute.station?.division?.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 text-xs rounded-full text-white"
+                                    <td class="px-3 py-3 font-medium">{{ attribute.name }}</td>
+                                    <td class="px-3 py-3">{{ attribute.station?.name }}</td>
+                                    <td class="px-3 py-3">{{ attribute.station?.division?.name }}</td>
+                                    <td class="px-3 py-3">
+                                        <span class="px-2 py-1 text-xs rounded-full text-white whitespace-nowrap"
                                               :class="attribute.color === 'rojo' ? 'bg-red-500' : 
                                                       attribute.color === 'amarillo' ? 'bg-yellow-400' : 
                                                       attribute.color === 'verde' ? 'bg-green-500' : 'bg-gray-400'">
                                             {{ attribute.color }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ attribute.order }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span :class="attribute.active ? 'text-green-600' : 'text-red-600'">
+                                    <td class="px-3 py-3 text-center">{{ attribute.order }}</td>
+                                    <td class="px-3 py-3">
+                                        <span :class="attribute.active ? 'text-green-600' : 'text-red-600'" class="whitespace-nowrap">
                                             {{ attribute.active ? 'Activo' : 'Inactivo' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                        <Link :href="route('attributes.edit', attribute.id)" class="text-blue-600 hover:text-blue-900">
+                                    <td class="px-3 py-3 whitespace-nowrap">
+                                        <Link :href="route('attributes.edit', attribute.id)" class="text-blue-600 hover:text-blue-900 mr-2">
                                             Editar
                                         </Link>
                                         <button @click="deleteAttribute(attribute.id)" class="text-red-600 hover:text-red-900">
@@ -75,7 +74,6 @@ const deleteAttribute = (id) => {
                                 </tr>
                             </tbody>
                         </table>
-                        </div>
                     </div>
                 </div>
             </div>
