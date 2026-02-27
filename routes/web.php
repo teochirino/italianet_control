@@ -25,6 +25,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/attributes/{attribute}/update-color', [AttributeController::class, 'updateColor'])
         ->middleware('can-update-attribute')
         ->name('attributes.update-color');
+    
+    Route::get('/stations/{station}/history', [ColorChangeHistoryController::class, 'getStationHistory'])
+        ->middleware('can-view-history')
+        ->name('stations.history');
+    Route::get('/attributes/{attribute}/history', [ColorChangeHistoryController::class, 'getAttributeHistory'])
+        ->middleware('can-view-history')
+        ->name('attributes.history');
 });
 
 Route::middleware(['auth', 'is-admin'])->prefix('admin')->group(function () {
@@ -46,11 +53,6 @@ Route::middleware(['auth', 'is-admin'])->prefix('admin')->group(function () {
         ->name('external-users.index');
     Route::post('/external-users/import', [ExternalUserController::class, 'import'])
         ->name('external-users.import');
-    
-    Route::get('/stations/{station}/history', [ColorChangeHistoryController::class, 'getStationHistory'])
-        ->name('stations.history');
-    Route::get('/attributes/{attribute}/history', [ColorChangeHistoryController::class, 'getAttributeHistory'])
-        ->name('attributes.history');
 });
 
 Route::middleware('auth')->group(function () {

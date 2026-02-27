@@ -63,9 +63,9 @@ const fetchHistory = async (page = 1) => {
     try {
         let url = '';
         if (props.attributeId) {
-            url = `/admin/attributes/${props.attributeId}/history?page=${page}`;
+            url = `/attributes/${props.attributeId}/history?page=${page}`;
         } else if (props.stationId) {
-            url = `/admin/stations/${props.stationId}/history?page=${page}`;
+            url = `/stations/${props.stationId}/history?page=${page}`;
         }
 
         const response = await axios.get(url);

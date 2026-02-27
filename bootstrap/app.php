@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'is-admin' => \App\Http\Middleware\IsAdmin::class,
             'can-update-attribute' => \App\Http\Middleware\CanUpdateAttribute::class,
+            'can-view-history' => \App\Http\Middleware\CanViewHistory::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

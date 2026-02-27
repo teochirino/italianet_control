@@ -229,8 +229,7 @@ onUnmounted(() => {
                                          :class="getColorClass(station.color)">
                                         <div class="flex items-center justify-between">
                                             <h4 class="text-lg font-semibold text-white">{{ station.name }}</h4>
-                                            <button v-if="isAdmin" 
-                                                    @click="showStationHistory(station)"
+                                            <button @click="showStationHistory(station)"
                                                     class="text-white hover:text-gray-200 transition-colors"
                                                     title="Ver historial de la estación">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,8 +258,7 @@ onUnmounted(() => {
                                                         <span class="text-sm font-medium text-gray-700">
                                                             {{ attribute.name }}
                                                         </span>
-                                                        <button v-if="isAdmin" 
-                                                                @click="showAttributeHistory(station, attribute)"
+                                                        <button @click="showAttributeHistory(station, attribute)"
                                                                 class="text-gray-400 hover:text-gray-600 transition-colors"
                                                                 title="Ver historial del atributo">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
