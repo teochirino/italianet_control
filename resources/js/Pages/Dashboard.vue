@@ -5,6 +5,7 @@ import ColorChangeConfirmModal from '@/Components/ColorChangeConfirmModal.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import axios from 'axios';
+import { calculateBusinessHours, isCurrentlyInBusinessHours } from '@/utils/businessTimeCalculator';
 
 const props = defineProps({
     divisions: Array,
@@ -105,6 +106,7 @@ const closeHistoryModal = () => {
 };
 
 const currentTime = ref(new Date());
+const isInBusinessHours = ref(isCurrentlyInBusinessHours());
 
 const calculateTimeInColor = (colorChangedAt) => {
     if (!colorChangedAt) {
@@ -113,29 +115,14 @@ const calculateTimeInColor = (colorChangedAt) => {
     
     const changedDate = new Date(colorChangedAt);
     const now = currentTime.value;
-    const diffMs = now - changedDate;
     
-    const seconds = Math.floor(diffMs / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    const businessTime = calculateBusinessHours(changedDate, now);
     
-    const parts = [];
-    
-    if (days > 0) {
-        parts.push(`${days}d`);
-    }
-    if (hours % 24 > 0) {
-        parts.push(`${hours % 24}h`);
-    }
-    if (minutes % 60 > 0) {
-        parts.push(`${minutes % 60}m`);
-    }
-    if (days === 0 && hours === 0 && minutes === 0) {
-        parts.push(`${seconds}s`);
+    if (!isInBusinessHours.value) {
+        return `${businessTime.formatted} ⏸️`;
     }
     
-    return parts.length > 0 ? parts.join(' ') : '0s';
+    return businessTime.formatted;
 };
 
 const refreshData = async () => {
@@ -151,10 +138,12 @@ onMounted(() => {
     refreshInterval = setInterval(() => {
         refreshData();
         currentTime.value = new Date();
+        isInBusinessHours.value = isCurrentlyInBusinessHours();
     }, 5000);
     
     const timeUpdateInterval = setInterval(() => {
         currentTime.value = new Date();
+        isInBusinessHours.value = isCurrentlyInBusinessHours();
     }, 1000);
     
     return () => clearInterval(timeUpdateInterval);

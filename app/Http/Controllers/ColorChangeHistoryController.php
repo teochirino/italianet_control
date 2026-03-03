@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ColorChangeHistory;
 use App\Models\Station;
 use App\Models\Attribute;
+use App\Services\BusinessTimeCalculator;
 use Illuminate\Http\Request;
 
 class ColorChangeHistoryController extends Controller
@@ -91,21 +92,7 @@ class ColorChangeHistoryController extends Controller
         $startTime = is_string($start) ? new \DateTime($start) : $start;
         $endTime = is_string($end) ? new \DateTime($end) : $end;
         
-        $interval = $startTime->diff($endTime);
-        
-        $days = $interval->days;
-        $hours = $interval->h;
-        $minutes = $interval->i;
-        $seconds = $interval->s;
-        
-        return [
-            'days' => $days,
-            'hours' => $hours,
-            'minutes' => $minutes,
-            'seconds' => $seconds,
-            'total_seconds' => ($days * 86400) + ($hours * 3600) + ($minutes * 60) + $seconds,
-            'formatted' => $this->formatDuration($days, $hours, $minutes, $seconds),
-        ];
+        return BusinessTimeCalculator::calculateBusinessHours($startTime, $endTime);
     }
 
     private function formatDuration($days, $hours, $minutes, $seconds)
