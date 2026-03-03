@@ -107,6 +107,7 @@ const closeHistoryModal = () => {
 
 const currentTime = ref(new Date());
 const isInBusinessHours = ref(isCurrentlyInBusinessHours());
+const frozenTimes = ref(new Map());
 
 const calculateTimeInColor = (colorChangedAt) => {
     if (!colorChangedAt) {
@@ -114,15 +115,23 @@ const calculateTimeInColor = (colorChangedAt) => {
     }
     
     const changedDate = new Date(colorChangedAt);
-    const now = currentTime.value;
+    const timeKey = colorChangedAt;
     
-    const businessTime = calculateBusinessHours(changedDate, now);
-    
-    if (!isInBusinessHours.value) {
+    if (isInBusinessHours.value) {
+        const now = currentTime.value;
+        const businessTime = calculateBusinessHours(changedDate, now);
+        frozenTimes.value.set(timeKey, businessTime.formatted);
+        return businessTime.formatted;
+    } else {
+        const frozenTime = frozenTimes.value.get(timeKey);
+        if (frozenTime) {
+            return `${frozenTime} ⏸️`;
+        }
+        const now = currentTime.value;
+        const businessTime = calculateBusinessHours(changedDate, now);
+        frozenTimes.value.set(timeKey, businessTime.formatted);
         return `${businessTime.formatted} ⏸️`;
     }
-    
-    return businessTime.formatted;
 };
 
 const refreshData = async () => {
