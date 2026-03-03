@@ -42,11 +42,11 @@ export function calculateBusinessHours(startDate, endDate) {
             dayEnd.setHours(WORK_END_HOUR, 0, 0, 0);
             
             let periodStart = new Date(current);
-            let periodEnd = new Date(current);
-            periodEnd.setHours(23, 59, 59, 999);
+            let periodEnd = new Date(end);
             
-            if (isSameDay(current, end)) {
-                periodEnd = new Date(end);
+            if (!isSameDay(current, end)) {
+                periodEnd = new Date(current);
+                periodEnd.setHours(23, 59, 59, 999);
             }
             
             if (periodStart < dayStart) {
@@ -57,15 +57,7 @@ export function calculateBusinessHours(startDate, endDate) {
                 periodEnd = new Date(dayEnd);
             }
             
-            if (periodStart < periodEnd && 
-                periodStart.getHours() >= WORK_START_HOUR && 
-                periodStart.getHours() < WORK_END_HOUR) {
-                
-                if (periodEnd.getHours() > WORK_END_HOUR) {
-                    periodEnd = new Date(current);
-                    periodEnd.setHours(WORK_END_HOUR, 0, 0, 0);
-                }
-                
+            if (periodStart < periodEnd) {
                 const secondsInPeriod = Math.floor((periodEnd - periodStart) / 1000);
                 totalSeconds += secondsInPeriod;
             }
