@@ -39,14 +39,15 @@ class BusinessTimeCalculator
                 $dayEnd = $current->copy()->setTime(self::WORK_END_HOUR, 0, 0);
 
                 $periodStart = $current->copy();
-                $periodEnd = $endCarbon->copy();
-
-                if (!$current->isSameDay($endCarbon)) {
-                    $periodEnd = $current->copy()->endOfDay();
-                }
+                $periodEnd = $current->isSameDay($endCarbon) ? $endCarbon->copy() : $dayEnd->copy();
 
                 if ($periodStart->lessThan($dayStart)) {
                     $periodStart = $dayStart->copy();
+                }
+
+                if ($periodStart->greaterThanOrEqualTo($dayEnd)) {
+                    $current->addDay()->startOfDay();
+                    continue;
                 }
 
                 if ($periodEnd->greaterThan($dayEnd)) {
@@ -54,7 +55,7 @@ class BusinessTimeCalculator
                 }
 
                 if ($periodStart->lessThan($periodEnd)) {
-                    $secondsInPeriod = $periodEnd->diffInSeconds($periodStart);
+                    $secondsInPeriod = $periodStart->diffInSeconds($periodEnd);
                     $totalSeconds += $secondsInPeriod;
                 }
             }
