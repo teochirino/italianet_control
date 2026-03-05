@@ -9,6 +9,7 @@ use App\Http\Controllers\UserStationAssignmentController;
 use App\Http\Controllers\ExternalUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ColorChangeHistoryController;
+use App\Http\Controllers\UserActivityReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -53,6 +54,15 @@ Route::middleware(['auth', 'is-admin'])->prefix('admin')->group(function () {
         ->name('external-users.index');
     Route::post('/external-users/import', [ExternalUserController::class, 'import'])
         ->name('external-users.import');
+    
+    Route::get('/user-activity-report', [UserActivityReportController::class, 'index'])
+        ->name('user-activity-report.index');
+    Route::get('/user-activity-report/data', [UserActivityReportController::class, 'getData'])
+        ->name('user-activity-report.data');
+    Route::get('/user-activity-report/calendar-data', [UserActivityReportController::class, 'getCalendarData'])
+        ->name('user-activity-report.calendar-data');
+    Route::get('/user-activity-report/day-activities', [UserActivityReportController::class, 'getDayActivities'])
+        ->name('user-activity-report.day-activities');
 });
 
 Route::middleware('auth')->group(function () {

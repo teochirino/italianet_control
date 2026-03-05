@@ -55,7 +55,16 @@ class FortifyServiceProvider extends ServiceProvider
                 ]);
             }
 
-            return $externalUser->user;
+            $user = $externalUser->user;
+
+            \App\Models\LoginLog::create([
+                'user_id' => $user->id,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'logged_in_at' => now(),
+            ]);
+
+            return $user;
         });
 
         Fortify::loginView(fn (Request $request) => Inertia::render('Auth/Login', [

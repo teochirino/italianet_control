@@ -187,6 +187,9 @@ onUnmounted(() => {
                     <Link :href="route('user-assignments.index')" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                         Asignar Usuarios
                     </Link>
+                    <Link :href="route('user-activity-report.index')" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-purple-700">
+                        Reportes de Actividad
+                    </Link>
                 </div>
             </div>
         </template>
